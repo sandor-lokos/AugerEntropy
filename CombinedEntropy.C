@@ -598,51 +598,63 @@ void CombinedEntropy()
 		const double chi2ndf = (ndf > 0) ? chi2 / ndf : -1.0;
 		const double conflev = TMath::Prob(chi2,ndf);
 		const double Sfit = ComputeEntropyFromQuadNBD(alpha1, alpha2, alpha3, mean1, k1, mean2, k2, mean3, k3, mean4, k4, xMax);
-		
+		*/
 		
 		// -----------------------------------------
 		// Draw
 		// -----------------------------------------
-		TCanvas* c = new TCanvas("cMultNBD", "LeadingInteractions mult NBD fit", 900, 700);
-		c->SetMargin(0.12, 0.04, 0.12, 0.06);
+		TCanvas* c = new TCanvas("cMultNBD", "", 1200, 1200);
+		c->SetTopMargin(0.05);
+		c->SetBottomMargin(0.1);
+		c->SetRightMargin(0.05);
+		c->SetLeftMargin(0.1);
 		c->SetLogy(1);
 		c->SetLogx(1);
-
+		
+		hMix[ien]->SetStats(0);
+		hMix[ien]->SetTitle("");
+		// hMix[ien]->Rebin(5);
 		hMix[ien]->SetMarkerStyle(20);
 		hMix[ien]->SetMarkerSize(0.9);
 		hMix[ien]->SetLineWidth(2);
-		hMix[ien]->GetXaxis()->SetRangeUser(0, 2000);
+		hMix[ien]->GetXaxis()->SetRangeUser(3, 3000);
+		hMix[ien]->SetMaximum(5e-2);
+		hMix[ien]->GetXaxis()->SetTitle("N");
+		hMix[ien]->GetXaxis()->SetTitleSize(0.06);
+		hMix[ien]->GetXaxis()->SetTitleOffset(0.6);
+		hMix[ien]->GetXaxis()->SetLabelSize(0.06);
+		hMix[ien]->GetYaxis()->SetTitle("P(N)");
+		hMix[ien]->GetYaxis()->SetTitleSize(0.06);
+		hMix[ien]->GetYaxis()->SetTitleOffset(0.6);
+		hMix[ien]->GetYaxis()->SetLabelSize(0.06);
 		hMix[ien]->Draw("HIST");
 
-		fNBD->SetLineWidth(2);
-		fNBD->Draw("SAME");
 
+		// /*
 		TLatex lat;
-		lat.SetNDC();
+		lat.SetNDC(false);
 		lat.SetTextFont(42);
-		lat.SetTextSize(0.035);
+		lat.SetTextSize(0.04);
 
-		const double xText = 0.60;
-		const double yText = 0.86;
-		const double dy    = 0.05;
-
-		lat.DrawLatex(xText, yText,            Form("#chi^{2}/NDF = %.3f, CL=%.1f%%", chi2ndf, conflev*100));
-		// lat.DrawLatex(xText, yText - 1.0 * dy, Form("k = %.4f", k));
-		lat.DrawLatex(xText, yText - 1.0 * dy, Form("S_{fit} = %.4f", Sfit));
-		lat.DrawLatex(xText, yText - 2.0 * dy, Form("S_{hist} = %.4f", Shist));
-		lat.DrawLatex(xText, yText - 3.0 * dy, Form("ln<n_{hist}> = %.4f #pm %.4f", log(navghist), navgherr));
+		lat.DrawLatex(4, 2e-4,"CORSIKA with Auger tune");		
+		// */
 
 		c->Update();
-		c->Print(Form("figs/combined_fitmult_en%i.png",ien));
-		*/
+		c->Print(Form("figs/mixed_mult_en%i.png",ien));
 		
 		const double Shist = ComputeEntropyFromHistogram(hMix[ien]);
 		const double Sherr = ComputeEntropyUncertaintyFromHistogram(hMix[ien]);
 		const double navghist = ComputeMeanFromHistogram(hMix[ien]);
 		const double navgherr = ComputeLogMeanUncertaintyFromHistogram(hMix[ien]);
 		
+		/* Max deviation as syst
 		double syst_dn = Shist - *min_element(entropyValues_dn.begin(), entropyValues_dn.end());
 		double syst_up = *max_element(entropyValues_up.begin(), entropyValues_up.end())-Shist;
+		*/
+		
+		/* average as syst */
+		double syst_dn = abs( Shist - accumulate(entropyValues_dn.begin(), entropyValues_dn.end(), 0.0) / entropyValues_dn.size() );
+		double syst_up = abs( Shist - accumulate(entropyValues_up.begin(), entropyValues_up.end(), 0.0) / entropyValues_up.size() );
 		
 		cout << "========================================" << endl;
 		cout << "Entries   : " << hMix[ien]->GetEntries() << endl;

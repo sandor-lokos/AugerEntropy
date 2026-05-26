@@ -1,3 +1,5 @@
 *.root
 *.lnk
 figs/
+SaveXmax.C
+XmaxDistributions.txt

@@ -103,6 +103,8 @@ void PlotEntropies()
 	S_lnnavg->SetMaximum(grmax);
 	S_lnnavg->Draw("PE SAME");
 	
+	S_lnnavg->Print();
+	
 	leg->AddEntry(S_lnnavg,"Auger based MC");
 	
 	syst_S_lnnavg->Print();
@@ -111,6 +113,8 @@ void PlotEntropies()
 	syst_S_lnnavg->SetFillColorAlpha(2, 0.3);
 	syst_S_lnnavg->SetLineStyle(2);
 	syst_S_lnnavg->Draw("E2 SAME");
+	
+	syst_S_lnnavg->Print();
 	
 	TF1* universal2 = new TF1("ln_navg","x+1", grmin, grmax);
 	universal2->SetLineColor(kBlack); // Customize appearance
